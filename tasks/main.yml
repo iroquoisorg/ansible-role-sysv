@@ -1,0 +1,12 @@
+- name: Add daemon scripts
+  template:
+    src: "{{ item.template_path }}"
+    dest: "/etc/init.d/{{ item.name }}"
+    mode: 0755
+  with_items: "{{ sysv_files }}"
+  register: sysv_add_daemon
+
+- name: Generate symbolic links
+  shell: "/usr/lib/insserv/insserv {{ item.item.name }}"
+  when: item.changed == true
+  with_items: "{{ sysv_add_daemon.results }}"
